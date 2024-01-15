@@ -100,6 +100,26 @@ app.post('/api/persons', (req, res) => {
   res.send(persons);
 });
 
+app.put('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const personInfo = persons.find((person) => person.id === id);
+
+  if (!personInfo) {
+    return res.status(400).json({
+      error: 'person not found'
+    });
+  }
+
+  const newPerson = {
+    ...personInfo,
+    name: req.body.name,
+    number: req.body.number
+  };
+
+  persons = persons.map((person) => (person.id !== id ? person : newPerson));
+  res.json(persons);
+});
+
 app.get('/api/info', (req, res) => {
   const date = new Date();
   res.send(
