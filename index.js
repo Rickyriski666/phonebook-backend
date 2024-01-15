@@ -23,11 +23,17 @@ let persons = [
     id: 4,
     name: 'Mary Poppendieck',
     number: '39-23-6423122'
+  },
+  {
+    id: 5,
+    name: 'awikwok',
+    number: '34872392'
   }
 ];
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('dist'));
 
 morgan.token('body', function getBody(req) {
   return JSON.stringify(req.body);
@@ -84,7 +90,7 @@ app.post('/api/persons', (req, res) => {
   }
 
   const newPerson = {
-    id: persons.length + 1,
+    id: Math.floor(Math.random() * 1000),
     name: personName,
     number: personNumber
   };
