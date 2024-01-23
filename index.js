@@ -3,6 +3,8 @@ const morgan = require('morgan');
 const cors = require('cors');
 const path = require('path');
 const app = express();
+const Person = require('./models/person');
+require('dotenv').config();
 
 let persons = [
   {
@@ -24,11 +26,6 @@ let persons = [
     id: 4,
     name: 'Mary Poppendieck',
     number: '39-23-6423122'
-  },
-  {
-    id: 5,
-    name: 'awikwok',
-    number: '34872392'
   }
 ];
 
@@ -45,19 +42,17 @@ app.use(
 );
 
 app.get('/api/persons', (req, res) => {
-  console.log(persons);
-  res.json(persons);
+  Person.find({}).then((persons) => {
+    res.json(persons);
+  });
 });
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const personInfo = persons.find((person) => person.id === id);
+  const id = req.params.id;
 
-  if (personInfo) {
-    res.json(personInfo);
-  } else {
-    res.status(404).end();
-  }
+  Person.findById(id).then((person) => {
+    res.json(person);
+  });
 });
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -71,33 +66,38 @@ app.post('/api/persons', (req, res) => {
   const personName = req.body.name;
   const personNumber = req.body.number;
 
-  const checkPerson = persons.find((person) => person.name === personName);
-  if (checkPerson) {
-    return res.status(400).json({
-      error: 'name must be unique'
-    });
-  }
+  // const checkPerson = Person.find({ name: personName }).then((person) => {
+  //   return person[0].name;
+  // });
 
-  if (!personName) {
-    return res.status(400).json({
-      error: 'name is missing'
-    });
-  }
+  // console.log(checkPerson);
+  // if (checkPerson) {
+  //   return res.status(400).json({
+  //     error: 'name must be unique'
+  //   });
+  // }
 
-  if (!personNumber) {
-    return res.status(400).json({
-      error: 'number is missing'
-    });
-  }
+  // if (!personName) {
+  //   return res.status(400).json({
+  //     error: 'name is missing'
+  //   });
+  // }
 
-  const newPerson = {
+  // if (!personNumber) {
+  //   return res.status(400).json({
+  //     error: 'number is missing'
+  //   });
+  // }
+
+  const newPerson = new Person({
     id: Math.floor(Math.random() * 1000),
     name: personName,
     number: personNumber
-  };
+  });
 
-  persons = [...persons, newPerson];
-  res.send(persons);
+  newPerson.save().then((savedPerson) => {
+    res.status(201).send(savedPerson);
+  });
 });
 
 app.put('/api/persons/:id', (req, res) => {
@@ -127,7 +127,7 @@ app.get('/api/info', (req, res) => {
   );
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
