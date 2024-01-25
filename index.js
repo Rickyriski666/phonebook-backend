@@ -8,6 +8,7 @@ require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
+// eslint-disable-next-line no-undef
 app.use('/', express.static(path.join(__dirname, 'dist')));
 
 morgan.token('body', function getBody(req) {
@@ -41,7 +42,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
   Person.findByIdAndDelete(id)
-    .then((result) => {
+    .then(() => {
       res.status(204).end();
     })
     .catch((err) => next(err));
@@ -100,6 +101,7 @@ app.get('/api/info', (req, res) => {
   });
 });
 
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
