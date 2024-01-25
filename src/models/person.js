@@ -3,12 +3,13 @@ require('dotenv').config();
 
 mongoose.set('strictQuery', false);
 
+// eslint-disable-next-line no-undef
 const url = process.env.MONGO_DB_URL;
 
 console.log('connecting to DB...');
 mongoose
   .connect(url)
-  .then((result) => {
+  .then(() => {
     console.log('connected to DB');
   })
   .catch((err) => {
